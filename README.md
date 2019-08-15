@@ -1,1 +1,1 @@
-ktane-jackAttack
+#[ModKit Wiki](../../wiki)
