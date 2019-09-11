@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using KModkit;
+using System.Text.RegularExpressions;
 
 public class jackAttackScript : MonoBehaviour {
 
@@ -26,6 +27,10 @@ public class jackAttackScript : MonoBehaviour {
     int sectionTime = 120; //138 before
     bool strikeGet = false;
     bool animating = false;
+
+    bool cycleInstead = false;
+    Coroutine cycle;
+
     int otherTime = 0;
     bool canClick = true;
     public List<int> bigWordOrder = new List<int> { 0, 1, 2, 3, 4 };
@@ -44,7 +49,13 @@ public class jackAttackScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-		clue = UnityEngine.Random.Range(0, 14);
+        if (TwitchPlaysActive == true)
+        {
+            cycleInstead = true;
+            sectionTime = 2800;
+        }
+        Debug.LogFormat("[Jack Attack #{0}] Twitch Plays mode: {1}", moduleId, TwitchPlaysActive);
+        clue = UnityEngine.Random.Range(0, 14);
         anchor = 41 * clue;
         texts[0].text = PhraseList.phrases[anchor];
         Debug.LogFormat("[Jack Attack #{0}] The clue is: \"{1}\"", moduleId, PhraseList.phrases[anchor].Replace("\n", " "));
@@ -68,48 +79,88 @@ public class jackAttackScript : MonoBehaviour {
                 texts[6].text = "";
                 texts[7].text = "";
             }
-            if (time < startTime)
+            if(cycleInstead == false)
             {
-                //texts[1].text = ""; I HAVE NO CLUE WHY HAVING THE IF STATEMENT HERE HELPS, IT JUST DOES
-                //texts[2].text = "";
-                canClick = false;
-            } else if (time < sectionTime + startTime)
+                if (time < startTime)
+                {
+                    //texts[1].text = ""; I HAVE NO CLUE WHY HAVING THE IF STATEMENT HERE HELPS, IT JUST DOES
+                    //texts[2].text = "";
+                    canClick = false;
+                }
+                else if (time < sectionTime + startTime)
+                {
+                    canClick = true;
+                    texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
+                    texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[0])];
+                }
+                else if (time < (sectionTime * 2) + startTime)
+                {
+                    texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
+                    texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[1])];
+                }
+                else if (time < (sectionTime * 3) + startTime)
+                {
+                    texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
+                    texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[2])];
+                }
+                else if (time < (sectionTime * 4) + startTime)
+                {
+                    texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
+                    texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[3])];
+                }
+                else if (time < (sectionTime * 5) + startTime)
+                {
+                    texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
+                    texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[4])];
+                }
+                else if (time < (sectionTime * 6) + startTime)
+                {
+                    texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
+                    texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[5])];
+                }
+                else
+                {
+                    //MISS
+                    time = 0;
+                    smallWordOrder.Shuffle();
+                    stage += 1;
+                    missedStages += 1;
+                    bigWordOrder.Add(bigWordOrder[(stage - 1) % 5]);
+                    Debug.LogFormat("[Jack Attack #{0}] Stage {1} missed. Current misses: {2}", moduleId, stage - 1, missedStages);
+                    Debug.LogFormat("[Jack Attack #{0}] The big word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)].Replace("\n", " "));
+                    Debug.LogFormat("[Jack Attack #{0}] The correct small word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6)].Replace("\n", " "));
+                    Check(0);
+                }
+            }
+            else
             {
-                canClick = true;
-                texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
-                texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[0])];
-            } else if (time < (sectionTime * 2) + startTime)
-            {
-                texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
-                texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[1])];
-            } else if (time < (sectionTime * 3) + startTime)
-            {
-                texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
-                texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[2])];
-            } else if (time < (sectionTime * 4) + startTime)
-            {
-                texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
-                texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[3])];
-            } else if (time < (sectionTime * 5) + startTime)
-            {
-                texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
-                texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[4])];
-            } else if (time < (sectionTime * 6) + startTime)
-            {
-                texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
-                texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[5])];
-            } else
-            {
-                //MISS
-                time = 0;
-                smallWordOrder.Shuffle();
-                stage += 1;
-                missedStages += 1;
-                bigWordOrder.Add(bigWordOrder[(stage - 1) % 5]);
-                Debug.LogFormat("[Jack Attack #{0}] Stage {1} missed. Current misses: {2}", moduleId, stage - 1, missedStages);
-                Debug.LogFormat("[Jack Attack #{0}] The big word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)].Replace("\n", " "));
-                Debug.LogFormat("[Jack Attack #{0}] The correct small word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6)].Replace("\n", " "));
-                Check(0);
+                if (time < startTime && time > 0)
+                {
+                    //texts[1].text = ""; I HAVE NO CLUE WHY HAVING THE IF STATEMENT HERE HELPS, IT JUST DOES
+                    //texts[2].text = "";
+                    canClick = false;
+                    if(cycle == null)
+                    {
+                        cycle = StartCoroutine(wordCycle());
+                    }
+                }
+                else if(time > 0)
+                {
+                    canClick = true;
+                }
+                if(time > sectionTime + startTime)
+                {
+                    //MISS
+                    time = 0;
+                    smallWordOrder.Shuffle();
+                    stage += 1;
+                    missedStages += 1;
+                    bigWordOrder.Add(bigWordOrder[(stage - 1) % 5]);
+                    Debug.LogFormat("[Jack Attack #{0}] Stage {1} missed. Current misses: {2}", moduleId, stage - 1, missedStages);
+                    Debug.LogFormat("[Jack Attack #{0}] The big word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)].Replace("\n", " "));
+                    Debug.LogFormat("[Jack Attack #{0}] The correct small word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6)].Replace("\n", " "));
+                    Check(0);
+                }
             }
         }
 
@@ -180,16 +231,25 @@ public class jackAttackScript : MonoBehaviour {
                     Button.GetComponent<MeshRenderer>().material = mats[1];
                     Debug.LogFormat("[Jack Attack #{0}] Stage {1} is correct. Current correct stages: {2}", moduleId, stage - 1, correctStages);
                     Check(1);
-                    Debug.LogFormat("[Jack Attack #{0}] The big word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)].Replace("\n", " "));
-                    Debug.LogFormat("[Jack Attack #{0}] The correct small word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6)].Replace("\n", " "));
+                    if(moduleSolved == false)
+                    {
+                        Debug.LogFormat("[Jack Attack #{0}] The big word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)].Replace("\n", " "));
+                        Debug.LogFormat("[Jack Attack #{0}] The correct small word is: \"{1}\"", moduleId, PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6)].Replace("\n", " "));
+                    }
                 }
                 else
                 {
                     Debug.LogFormat("[Jack Attack #{0}] Stage {1} striked. Module reset.", moduleId, stage);
                     time = 0;
                     stage = 0;
+                    missedStages = 0;
                     bigWordOrder.Shuffle();
                     smallWordOrder.Shuffle();
+                    if (cycleInstead == true)
+                    {
+                        StopCoroutine(cycle);
+                        cycle = null;
+                    }
                     texts[0].text = PhraseList.phrases[anchor];
                     texts[1].text = "";
                     texts[2].text = "";
@@ -228,11 +288,17 @@ public class jackAttackScript : MonoBehaviour {
             moduleSolved = true;
         } else if (missedStages == 3)
         {
-            Debug.LogFormat("[Jack Attack #{0}] 3 staged missed, module striked.", moduleId);
+            Debug.LogFormat("[Jack Attack #{0}] 3 stages missed, module striked.", moduleId);
             time = 0;
             stage = 0;
+            missedStages = 0;
             bigWordOrder.Shuffle();
             smallWordOrder.Shuffle();
+            if (cycleInstead == true)
+            {
+                StopCoroutine(cycle);
+                cycle = null;
+            }
             texts[0].text = PhraseList.phrases[anchor];
             texts[1].text = "";
             texts[2].text = "";
@@ -246,6 +312,11 @@ public class jackAttackScript : MonoBehaviour {
         } else if (i == 1 && correctStages != 5)
         {
             GoodAnimation();
+            if (cycleInstead == true)
+            {
+                StopCoroutine(cycle);
+                cycle = null;
+            }
         }
     }
 
@@ -259,6 +330,83 @@ public class jackAttackScript : MonoBehaviour {
             texts[6].text = "deaf";
             texts[1].color = colors[0];
             texts[2].color = colors[2];
+        }
+    }
+
+    private IEnumerator wordCycle()
+    {
+        int counter = 0;
+        while (moduleSolved != true)
+        {
+            texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
+            texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[counter])];
+            yield return new WaitForSeconds(1f);
+            counter++;
+            if(counter == 6)
+            {
+                counter = 0;
+            }
+        }
+    }
+
+    //twitch plays
+    bool TwitchPlaysActive;
+    private bool isInputValid(string sn)
+    {
+        if(sn.EqualsIgnoreCase(PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[0])]) || sn.EqualsIgnoreCase(PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[1])]) || sn.EqualsIgnoreCase(PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[2])]) || sn.EqualsIgnoreCase(PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[3])]) || sn.EqualsIgnoreCase(PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[4])]) || sn.EqualsIgnoreCase(PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[5])]))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    #pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"!{0} start [Starts the module] | !{0} submit <small phrase> [Submits the given 'small phrase' when it appears] | The module is slower to make it possible for TP";
+    #pragma warning restore 414
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        if (Regex.IsMatch(command, @"^\s*start\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            if(stage == 0)
+            {
+                yield return null;
+                Button.OnInteract();
+                yield break;
+            }
+            else
+            {
+                yield return "sendtochaterror I'm already cycling through small phrases! (I've been started already)";
+                yield break;
+            }
+        }
+        string[] parameters = command.Split(' ');
+        if (Regex.IsMatch(parameters[0], @"^\s*submit\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            if (parameters.Length >= 2)
+            {
+                string phrase = "";
+                for(int i = 1; i < parameters.Length; i++)
+                {
+                    phrase += parameters[i]+" ";
+                }
+                phrase = phrase.Remove(phrase.Length-1);
+                if (stage == 0)
+                {
+                    yield return "sendtochaterror I haven't got any small phrases to submit! (Start me plz)";
+                    yield break;
+                }
+                else if (isInputValid(phrase))
+                {
+                    yield return null;
+                    while (!texts[2].text.EqualsIgnoreCase(phrase)) yield return "trycancel The small phrase was not pressed due to a request to cancel.";
+                    Button.OnInteract();
+                }
+                else
+                {
+                    yield return "sendtochaterror That small phrase does not appear in the cycle of small phrases!";
+                }
+            }
+            yield break;
         }
     }
 }
