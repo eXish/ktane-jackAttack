@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,12 +49,7 @@ public class jackAttackScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        if (TwitchPlaysActive == true)
-        {
-            cycleInstead = true;
-            sectionTime = 2800;
-        }
-        Debug.LogFormat("[Jack Attack #{0}] Twitch Plays mode: {1}", moduleId, TwitchPlaysActive);
+        StartCoroutine(delay());
         clue = UnityEngine.Random.Range(0, 14);
         anchor = 41 * clue;
         texts[0].text = PhraseList.phrases[anchor];
@@ -347,6 +342,18 @@ public class jackAttackScript : MonoBehaviour {
                 counter = 0;
             }
         }
+    }
+
+    private IEnumerator delay()
+    {
+        yield return new WaitForSeconds(1f);
+        if (TwitchPlaysActive == true)
+        {
+            cycleInstead = true;
+            sectionTime = 10000;
+        }
+        Debug.LogFormat("[Jack Attack #{0}] Twitch Plays mode: {1}", moduleId, TwitchPlaysActive);
+        StopCoroutine("delay");
     }
 
     //twitch plays
