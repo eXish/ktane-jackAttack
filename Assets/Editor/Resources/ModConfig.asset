@@ -16,6 +16,6 @@ MonoBehaviour:
   author: Blananas2
   description: "Remember the clue...\n\r\nModule ID: jackAttack\nCreated by Blananas2\r
     & Fartlicker777\n\r\nThe manual can be found here: https://ktane.timwi.de/HTML/Jack%20Attack.html"
-  version: 1.0
+  version: 1.3.4
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 411847952fd1c7643ba498f0a07d81c4, type: 3}
