@@ -1466,7 +1466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8447041d9992fa94394fb5d74f41d51c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bomb: {fileID: 0}
+  Bomb: {fileID: 114454383462897410}
   Audio: {fileID: 114915473299363512}
   Button: {fileID: 114070958577608192}
   texts:

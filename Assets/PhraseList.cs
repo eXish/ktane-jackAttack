@@ -129,7 +129,7 @@
         "Some Anime or Somethin'", "The Gamepad", "X01", "Dismay", "Mystic Square", "Monsplode etc", "Organization", "Rook",
         "Grown Men Punching Each Other", "Monsplode, Fight!", "Lucky Dice", "Disarm", "Chess", "Chess", "The previousanswer was correct", "Pawn",
         "Electric Boogaloo",
-        "x^2", "Dot Dah Dit Dash", "Rectangular Bars", "Simon's Whole Family", "Rotations", "Remember the Clue", "Pointy Colors", "Mental",
+        "x^2", "Dot Dah Dit Dash", "Rectangular Bars", "Simon's Whole\nFamily", "Rotations", "Remember the Clue", "Pointy Colors", "Mental",
         "Colored Squares", "Morsematics", "Ordered Keys", "Simon States", "Caesar Cycle", "Forget Me Not", "Red Arrows", "Crazy Talk",
         "Decolored Squares", "Morse Code", "Unordered Keys", "Simon Screams", "Affine Cycle", "Forget Everything", "Yellow arrows", "Who's On First",
         "Varicolored Squares", "Color Morse", "Reordered Keys", "Simon Says", "Symbol Cycle", "Forget This", "Blue Arrows", "Regular Crazy Talk",
