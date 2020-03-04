@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +30,7 @@ public class jackAttackScript : MonoBehaviour {
 
     bool cycleInstead = false;
     Coroutine cycle;
+    bool dontDisp = true;
 
     int otherTime = 0;
     bool canClick = true;
@@ -45,16 +46,12 @@ public class jackAttackScript : MonoBehaviour {
     void Awake () {
         moduleId = moduleIdCounter++;
         Button.OnInteract += delegate () { PressButton(); return false; };
+        Bomb.OnBombExploded += delegate { StopAllCoroutines(); OnExplode(); };
     }
 
     // Use this for initialization
     void Start () {
-        if (TwitchPlaysActive == true)
-        {
-            cycleInstead = true;
-            sectionTime = 2800;
-        }
-        Debug.LogFormat("[Jack Attack #{0}] Twitch Plays mode: {1}", moduleId, TwitchPlaysActive);
+        StartCoroutine(delay());
         clue = UnityEngine.Random.Range(0, 14);
         anchor = 41 * clue;
         texts[0].text = PhraseList.phrases[anchor];
@@ -139,14 +136,11 @@ public class jackAttackScript : MonoBehaviour {
                     //texts[1].text = ""; I HAVE NO CLUE WHY HAVING THE IF STATEMENT HERE HELPS, IT JUST DOES
                     //texts[2].text = "";
                     canClick = false;
-                    if(cycle == null)
-                    {
-                        cycle = StartCoroutine(wordCycle());
-                    }
                 }
                 else if(time > 0)
                 {
                     canClick = true;
+                    dontDisp = false;
                 }
                 if(time > sectionTime + startTime)
                 {
@@ -199,6 +193,15 @@ public class jackAttackScript : MonoBehaviour {
         }
 	}
 
+    void OnExplode()
+    {
+        if (soundEffect != null)
+        {
+            soundEffect.StopSound();
+            soundEffect = null;
+        }
+    }
+
     void PressButton () {
         Button.AddInteractionPunch();
         if (moduleSolved == false && canClick == true)
@@ -247,8 +250,7 @@ public class jackAttackScript : MonoBehaviour {
                     smallWordOrder.Shuffle();
                     if (cycleInstead == true)
                     {
-                        StopCoroutine(cycle);
-                        cycle = null;
+                        dontDisp = true;
                     }
                     texts[0].text = PhraseList.phrases[anchor];
                     texts[1].text = "";
@@ -284,6 +286,10 @@ public class jackAttackScript : MonoBehaviour {
             soundEffect = Audio.PlaySoundAtTransformWithRef("correct", transform);
             back.GetComponent<MeshRenderer>().material = mats[0];
             Button.GetComponent<MeshRenderer>().material = mats[2];
+            if(cycleInstead == true)
+            {
+                StopCoroutine(cycle);
+            }
             GetComponent<KMBombModule>().HandlePass();
             moduleSolved = true;
         } else if (missedStages == 3)
@@ -296,8 +302,7 @@ public class jackAttackScript : MonoBehaviour {
             smallWordOrder.Shuffle();
             if (cycleInstead == true)
             {
-                StopCoroutine(cycle);
-                cycle = null;
+                dontDisp = true;
             }
             texts[0].text = PhraseList.phrases[anchor];
             texts[1].text = "";
@@ -314,8 +319,7 @@ public class jackAttackScript : MonoBehaviour {
             GoodAnimation();
             if (cycleInstead == true)
             {
-                StopCoroutine(cycle);
-                cycle = null;
+                dontDisp = true;
             }
         }
     }
@@ -338,15 +342,35 @@ public class jackAttackScript : MonoBehaviour {
         int counter = 0;
         while (moduleSolved != true)
         {
-            texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
-            texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[counter])];
-            yield return new WaitForSeconds(1f);
-            counter++;
-            if(counter == 6)
+            if(dontDisp == false)
             {
-                counter = 0;
+                texts[1].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 1)];
+                texts[2].text = PhraseList.phrases[anchor + (bigWordOrder[stage - 1] + 6) + (5 * smallWordOrder[counter])];
+                yield return new WaitForSeconds(1f);
+                counter++;
+                if (counter == 6)
+                {
+                    counter = 0;
+                }
+            }
+            else
+            {
+                yield return new WaitForSeconds(.1f);
             }
         }
+    }
+
+    private IEnumerator delay()
+    {
+        yield return new WaitForSeconds(1f);
+        if (TwitchPlaysActive == true)
+        {
+            cycleInstead = true;
+            sectionTime = 2800;
+            cycle = StartCoroutine(wordCycle());
+        }
+        Debug.LogFormat("[Jack Attack #{0}] Twitch Plays mode: {1}", moduleId, TwitchPlaysActive);
+        StopCoroutine("delay");
     }
 
     //twitch plays

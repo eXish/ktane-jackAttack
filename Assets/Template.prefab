@@ -1466,7 +1466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8447041d9992fa94394fb5d74f41d51c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bomb: {fileID: 0}
+  Bomb: {fileID: 114454383462897410}
   Audio: {fileID: 114915473299363512}
   Button: {fileID: 114070958577608192}
   texts:
@@ -1489,7 +1489,7 @@ MonoBehaviour:
   - {r: 0.24705882, g: 0.60784316, b: 0, a: 1}
   - {r: 0.105882354, g: 0.23921569, b: 0, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
-  bigWordOrder: 0000000001000000020000000300000004000000
+  bigWordOrder: 0000000001000000020000000300000004000000050000000600000007000000
   smallWordOrder: 000000000100000002000000030000000400000005000000
 --- !u!114 &114233238003136118
 MonoBehaviour:
